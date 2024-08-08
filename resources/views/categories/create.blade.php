@@ -5,6 +5,7 @@
 <div class="card card-default">
     <div class="card-header">create Category</div>
     <div class="card-body">
+        
         <form action="{{ route('categories.store') }}" method="POST">
             @csrf
             <div class="form-group">
