@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Category;
-
+use App\Http\Requests\CreateCategoryRequest;
 class CategoriesController extends Controller
 {
     /**
@@ -38,11 +38,9 @@ class CategoriesController extends Controller
     public function store(Request $request)
     {
         //
-        $this -> validate($request,[
-            'name' => 'required|unique:categories',
-        ]);
+       
 
-        $ncategory = new Category();
+       // $ncategory = new Category();
         Category::create([
             'name'=>$request ->name
         ]);
