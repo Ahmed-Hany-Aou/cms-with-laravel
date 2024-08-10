@@ -73,37 +73,38 @@
         </nav>
 
         <main class="py-4">
-          
             @auth
-            
-            <div class="container">
-            @if(session()->has('success'))
-
-            <div class="alert alert-success">
-
-                {{ session()->get('success') }}
-                </div>
-                @endif
-                <div class="row">
+              <div class="container">
+                  @if(session()->has('success'))
+                    <div class="alert alert-success">
+                      {{ session()->get('success') }}
+                    </div>
+                  @endif
+                  <div class="row">
                     <div class="col-md-4">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <a href="#">Posts</a>
-                            </li>
-                            <li class="list-group-item">
-                                <a href="{{route ('categories.index')}}">Categories</a>
-                            </li>
-                        </ul>
+                      <ul class="list-group">
+                        <li class="list-group-item">
+                          <a href="">Posts</a>
+                        </li>
+                        <li class="list-group-item">
+                          <a href="{{ route('categories.index') }}">Categories</a>
+                        </li>
+                      </ul>
                     </div>
                     <div class="col-md-8">
-                        @yield("content")
+                        @yield('content')
                     </div>
-                </div>
-            </div>
+                  </div>
+              </div>
             @else
-                @yield("content")
+              @yield('content')
             @endauth
         </main>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    @yield('scripts')
 </body>
 </html>
