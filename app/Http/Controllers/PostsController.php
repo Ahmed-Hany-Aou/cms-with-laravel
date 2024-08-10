@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\Posts\CreatePostsRequest;
+use App\Post;
 
-class PostController extends Controller
+class PostsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,7 +15,6 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
         return view('posts.index');
     }
 
@@ -24,7 +25,6 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
         return view('posts.create');
     }
 
@@ -34,10 +34,31 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(CreatePostsRequest $request)
+{
+    // Initialize $image as null
+    $image = null;
+
+    // Check if an image was uploaded
+    if ($request->hasFile('image')) {
+        // Upload the image to storage
+        $image = $request->image->store('posts');
     }
+
+    // Create the post
+    Post::create([
+        'title' => $request->title,
+        'description' => $request->description,
+        'content' => $request->content,
+        'image' => $image  // This will be null if no image is uploaded
+    ]);
+
+    // Flash message
+    session()->flash('success', 'Post created successfully.');
+
+    // Redirect user
+    return redirect(route('posts.index'));
+}
 
     /**
      * Display the specified resource.

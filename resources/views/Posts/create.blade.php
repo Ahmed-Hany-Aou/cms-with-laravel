@@ -7,7 +7,7 @@
   </div>
 
   <div class="card-body">
-    <form action="{{ route('posts.store') }}" method="POST">
+    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
       @csrf
 
       <div class="form-group">
@@ -27,11 +27,7 @@
         <label for="pubished_at">Pubished At</label>
         <input type="text" class="form-control" name="pubished_at" id='pubished_at'>
       </div>
-      <div class="form-group">
-        <label for="image">Image</label>
-        <input type="file" class="form-control" name="image" id='image'>
-      </div>
-
+   
       <div class="form-group">
         <button type="submit" class="btn btn-success">
           Create Post
