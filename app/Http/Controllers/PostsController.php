@@ -35,31 +35,30 @@ class PostsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(CreatePostsRequest $request)
-{
-    // Initialize $image as null
-    $image = null;
-
-    // Check if an image was uploaded
-    if ($request->hasFile('image')) {
-        // Upload the image to storage
-        $image = $request->image->store('posts');
+    {
+        // Initialize $image as null
+        $image = null;
+    
+        // Check if an image was uploaded
+        if ($request->hasFile('image')) {
+            // Upload the image to storage
+            $image = $request->image->store('posts');
+        }
+    
+        // Create the post
+        Post::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'content' => $request->content,
+            'image' => $image  // This will be null if no image is uploaded
+        ]);
+    
+        // Flash message
+        session()->flash('success', 'Post created successfully.');
+    
+        // Redirect user
+        return redirect(route('posts.index'));
     }
-
-    // Create the post
-    Post::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'content' => $request->content,
-        'image' => $image  // This will be null if no image is uploaded
-    ]);
-
-    // Flash message
-    session()->flash('success', 'Post created successfully.');
-
-    // Redirect user
-    return redirect(route('posts.index'));
-}
-
     /**
      * Display the specified resource.
      *
@@ -100,12 +99,30 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        $post->delete();
+        $post = Post::withTrashed()->where('id', $id)->firstOrFail();
 
-        session()->flash('success', 'Post trashed successfully.');
+        if ($post->trashed()) {
+          $post->forceDelete();
+        } else {
+          $post->delete();
+        }
+
+        session()->flash('success', 'Post deleted successfully.');
 
         return redirect(route('posts.index'));
+    }
+
+      /**
+     * Display a list of all trashed posts
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function trashed()
+    {
+        $trashed = Post::onlyTrashed()->get();
+
+      return view('posts.index')->with('posts', $trashed);
     }
 }
