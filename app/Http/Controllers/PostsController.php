@@ -43,14 +43,17 @@ class PostsController extends Controller
         if ($request->hasFile('image')) {
             // Upload the image to storage
             $image = $request->image->store('posts');
+            
         }
+
     
         // Create the post
         Post::create([
             'title' => $request->title,
             'description' => $request->description,
             'content' => $request->content,
-            'image' => $image  // This will be null if no image is uploaded
+            'image' => $image,  // This will be null if no image is uploaded
+            'published_at' => $request->published_at
         ]);
     
         // Flash message
