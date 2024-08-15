@@ -12,16 +12,21 @@ class AddDescriptionToPostsTable extends Migration
      * @return void
      */
     public function up()
-{
-    Schema::table('posts', function (Blueprint $table) {
-        $table->text('description')->nullable();
-    });
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            if (!Schema::hasColumn('posts', 'description')) {
+                $table->text('description')->nullable();
+            }
+        });
+    }
+    
+    public function down()
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            if (Schema::hasColumn('posts', 'description')) {
+                $table->dropColumn('description');
+            }
+        });
+    }
 }
-
-public function down()
-{
-    Schema::table('posts', function (Blueprint $table) {
-        $table->dropColumn('description');
-    });
-}
-}
+    
