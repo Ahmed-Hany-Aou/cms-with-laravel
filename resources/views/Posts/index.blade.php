@@ -28,13 +28,9 @@
                 {{ $post->title }}
               </td>
               <td>
-                @if($post->category)
-                  <a href="{{ route('categories.edit', $post->category->id) }}">
-                      {{ $post->category->name }}
-                  </a>
-                @else
-                  <span>No Category</span>
-                @endif
+                <a href="{{ route('categories.edit', $post->category->id) }}">
+                    {{ $post->category->name }}
+                </a>
               </td>
               @if($post->trashed())
                 <td>
