@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\Posts\CreatePostsRequest;
-use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Post;
+use App\Tag;
 use App\Category;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Posts\UpdatePostRequest;
 
 class PostsController extends Controller
 {
+
     public function __construct()
     {
       $this->middleware('verifyCategoriesCount')->only(['create', 'store']);
     }
-
-
 
     /**
      * Display a listing of the resource.
@@ -25,8 +24,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        // Eager load the category relationship to avoid N+1 queries
-        return view('posts.index')->with('posts', Post::with('category')->get());
+        return view('posts.index')->with('posts', Post::all());
     }
 
     /**
@@ -36,7 +34,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('posts.create')->with('categories', Category::all());
+        return view('posts.create')->with('categories', Category::all())->with('tags', Tag::all());
     }
 
     /**
@@ -47,73 +45,87 @@ class PostsController extends Controller
      */
     public function store(CreatePostsRequest $request)
     {
-        // Initialize $image as null
+        // Image handling with validation
         $image = null;
-
-        // Check if an image was uploaded
-        if ($request->hasFile('image')) {
-            // Upload the image to storage
-            $image = $request->image->store('posts');
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $image = $request->image->store('posts'); // Replace with optimized image storage if needed
         }
-
+    
         // Create the post
-        Post::create([
+        $post = Post::create([
             'title' => $request->title,
             'description' => $request->description,
             'content' => $request->content,
             'image' => $image,
             'published_at' => $request->published_at,
-            'category_id' => $request->category, // Ensure this matches your form input name
+            'category_id' => $request->category
+    
         ]);
-
-        // Flash message
+    
+        // Attach tags
+        if ($request->tags) {
+            $post->tags()->attach($request->tags);
+        }
+    
+        // Flash success message
         session()->flash('success', 'Post created successfully.');
-
-        // Redirect user
+    
         return redirect(route('posts.index'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit(Post $post)
     {
-        return view('posts.create')->with('post', $post)->with('categories', Category::all());
+        return view('posts.create')->with('post', $post)->with('categories', Category::all())->with('tags', Tag::all());
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
         $data = $request->only(['title', 'description', 'published_at', 'content']);
-
-        // Check if a new image was uploaded
+        // check if new image
         if ($request->hasFile('image')) {
-            // Upload it
-            $image = $request->image->store('posts');
-            // Delete the old one
-            $post->deleteImage();
-            $data['image'] = $image;
+          // uplload it
+          $image = $request->image->store('posts');
+          // delete old one
+          $post->deleteImage();
+
+          $data['image'] = $image;
         }
 
-        // Add category_id to the data array
-        $data['category_id'] = $request->category;
+        if ($request->tags) {
+          $post->tags()->sync($request->tags);
+        }
 
-        // Update attributes
+        // update attributes
         $post->update($data);
 
-        // Flash message
+        // flash message
         session()->flash('success', 'Post updated successfully.');
 
-        // Redirect user
+        // redirect user
         return redirect(route('posts.index'));
     }
 
@@ -128,10 +140,10 @@ class PostsController extends Controller
         $post = Post::withTrashed()->where('id', $id)->firstOrFail();
 
         if ($post->trashed()) {
-            $post->deleteImage();
-            $post->forceDelete();
+          $post->deleteImage();
+          $post->forceDelete();
         } else {
-            $post->delete();
+          $post->delete();
         }
 
         session()->flash('success', 'Post deleted successfully.');
@@ -139,32 +151,26 @@ class PostsController extends Controller
         return redirect(route('posts.index'));
     }
 
-    /**
-     * Display a list of all trashed posts.
+      /**
+     * Display a list of all trashed posts
      *
      * @return \Illuminate\Http\Response
      */
     public function trashed()
     {
-        $trashed = Post::onlyTrashed()->get();
+      $trashed = Post::onlyTrashed()->get();
 
-        return view('posts.index')->with('posts', $trashed);
+      return view('posts.index')->with('posts', $trashed);
     }
 
-    /**
-     * Restore the specified trashed resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function restore($id)
     {
-        $post = Post::withTrashed()->where('id', $id)->firstOrFail();
+      $post = Post::withTrashed()->where('id', $id)->firstOrFail();
+      
+      $post->restore();
 
-        $post->restore();
+      session()->flash('success', 'Post restored successfully.');
 
-        session()->flash('success', 'Post restored successfully.');
-
-        return redirect()->back();
+      return redirect()->back();
     }
 }
