@@ -1,4 +1,3 @@
- <!-- not the same as the instrutors code -->
 @extends('layouts.blog')
 
 @section('title')
@@ -16,7 +15,7 @@
         <p class="opacity-70 text-uppercase small ls-1">
           {{ $post->category->name ?? 'Uncategorized' }}
         </p>
-        <h1 class="display-4 mt-7 mb-8">{{ $post->title }}</h1>
+        <h1 class="display-4 mt-7 mb-8">{{  $post->title }}</h1>
         <p><span class="opacity-70 mr-1">By</span> <a class="text-white" href="#">
           {{ $post->user->name ?? 'Unknown Author' }}
         </a></p>
@@ -42,14 +41,16 @@
 
       {!! $post->content !!}
 
+      <div class="addthis_inline_share_toolbox_fus8"></div>
+
       <div class="row">
-        <div class="gap-xy-2 mt-6">
-          @foreach($post->tags as $tag)
-            <a class="badge badge-pill badge-secondary" href="#">
-              {{ $tag->name ?? 'No Tag' }}
-            </a>
-          @endforeach
-        </div>
+          <div class="gap-xy-2 mt-6">
+            @foreach($post->tags as $tag)
+              <a class="badge badge-pill badge-secondary" href="{{ route('blog.tag', $tag->id) }}">
+                {{ $tag->name ?? 'No Tag' }}
+              </a>
+            @endforeach
+          </div>
       </div>
 
     </div>
@@ -62,7 +63,7 @@
       <div class="row">
         <div class="col-lg-8 mx-auto">
           <hr>
-          <div id="disqus_thread"></div>
+            <div id="disqus_thread"></div>
           <script>
             var disqus_config = function () {
               this.page.url = "{{ config('app.url') }}/blog/posts/{{ $post->id }}";
@@ -84,5 +85,4 @@
     </div>
   </div>
 </main>
-@endsection     
- <!-- not the same as the instrutors code -->
+@endsection
