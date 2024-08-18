@@ -1,3 +1,4 @@
+ <!-- not the same as the instrutors code -->
 @extends('layouts.blog')
 
 @section('title')
@@ -83,4 +84,5 @@
     </div>
   </div>
 </main>
-@endsection
+@endsection     
+ <!-- not the same as the instrutors code -->
