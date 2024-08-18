@@ -14,15 +14,15 @@ class CreatePostsTable extends Migration
     public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
-            $table->increments('id');
+            $table->increments('id'); // Auto-incrementing ID
             $table->string('title');
             $table->text('description');
             $table->text('content');
-            $table->string('image');
-            $table->integer('user_id');
+            $table->string('image')->nullable();
             $table->integer('category_id');
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
+            $table->softDeletes(); // If you want to enable soft deletes
         });
     }
 

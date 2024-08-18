@@ -50,26 +50,25 @@ class PostsController extends Controller
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $image = $request->image->store('posts'); // Replace with optimized image storage if needed
         }
-    
-        // Create the post
+        // create the post
         $post = Post::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'content' => $request->content,
-            'image' => $image,
-            'published_at' => $request->published_at,
-            'category_id' => $request->category
-    
+          'title' => $request->title,
+          'description' => $request->description,
+          'content' => $request->content,
+          'image' => $image,
+          'published_at' => $request->published_at,
+          'category_id' => $request->category,
+          'id' => auth()->user()->id
         ]);
-    
-        // Attach tags
+
         if ($request->tags) {
-            $post->tags()->attach($request->tags);
+          $post->tags()->attach($request->tags);
         }
-    
-        // Flash success message
+
+        // flash message
         session()->flash('success', 'Post created successfully.');
-    
+        // redirect user
+
         return redirect(route('posts.index'));
     }
 

@@ -12,11 +12,13 @@ class MakeImageNullableInPostsTable extends Migration
      * @return void
      */
     public function up()
-{
-    Schema::table('posts', function (Blueprint $table) {
-        $table->string('image')->nullable()->change();
-    });
-}
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->string('image')->nullable()->change();
+        });
+    }
+    
+    
 
 public function down()
 {
