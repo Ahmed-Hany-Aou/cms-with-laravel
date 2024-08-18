@@ -45,11 +45,11 @@ class PostsController extends Controller
      */
     public function store(CreatePostsRequest $request)
     {
-        // Image handling with validation
+        // upload the image to storage
         $image = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $image = $request->image->store('posts'); // Replace with optimized image storage if needed
-        }
+            $image = $request->image->store('posts'); // Replace with optimized image storage if needed);
+            }
         // create the post
         $post = Post::create([
           'title' => $request->title,
